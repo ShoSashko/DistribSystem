@@ -1,13 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Secondary1.Dto;
-using System;
+using Secondary2.Dto;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace Secondary1.Controllers
+namespace Secondary2.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -24,7 +20,6 @@ namespace Secondary1.Controllers
         [HttpPost]
         public async Task<IActionResult> Append([FromBody]LogDto dto)
         {
-            Thread.Sleep(5000);
             LogList.Add(dto.Message);
             
             return Ok();

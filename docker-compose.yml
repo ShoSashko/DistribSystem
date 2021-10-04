@@ -1,23 +1,20 @@
 version: "3.9"
-networks:
-    test:
-        driver: bridge
 services:
-    web1:
+    master:
         build: 
             context: .
             dockerfile: MasterNode/Dockerfile
         ports:
             - "9091:80"
-        links:
-            - "web:secondary"
-        networks:
-            - test
-    web:
+    secondary1:
         build: 
             context: .
             dockerfile: Secondary1/Dockerfile
         ports:
             - "9092:80"
-        networks:
-            - test
+    secondary2:
+        build: 
+            context: .
+            dockerfile: Secondary2/Dockerfile
+        ports:
+            - "9093:80"

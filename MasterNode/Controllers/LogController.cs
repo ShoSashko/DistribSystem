@@ -1,9 +1,8 @@
-﻿using MasterNode.Services;
+﻿using MasterNode.Dto;
+using MasterNode.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MasterNode.Controllers
@@ -29,8 +28,12 @@ namespace MasterNode.Controllers
         public async Task<IActionResult> Append()
         {
             var message = $"Added log {DateTime.Now}";
+            var logDto = new LogDto
+            {
+                Message = message
+            };
             LogList.Add(message);
-            await _logService.AppendMessage(message);
+            await _logService.AppendMessage(logDto);
             return Ok();
         }
     }
