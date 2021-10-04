@@ -13,6 +13,10 @@ This is a program which emulates fault-tolerant in-memory distirbuted log. The m
 # Using the App
 
 ```bash
+    # post a message (master only)
+    POST localhost:9091/log 
+    {"Message": "Test"}
+
     # get logs from master
     GET localhost:9091/log
     # get logs from secondary1
@@ -20,9 +24,6 @@ This is a program which emulates fault-tolerant in-memory distirbuted log. The m
     # get logs from secondary2
     GET localhost:9093/log
 
-    # post a message (master only)
-    POST localhost:8080/log 
-    {"Message": "Test"}
 ```
 # Technologies
 
