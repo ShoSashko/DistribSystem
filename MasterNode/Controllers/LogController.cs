@@ -25,9 +25,9 @@ namespace MasterNode.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Append()
+        public async Task<IActionResult> Append(LogDto dto)
         {
-            var message = $"Added log {DateTime.Now}";
+            var message = $"Added log {DateTime.Now} with message: {dto.Message}";
             var logDto = new LogDto
             {
                 Message = message

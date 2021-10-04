@@ -21,31 +21,47 @@ namespace MasterNode.Services
 
         public async Task AppendMessage(LogDto message)
         {
-            List<string> uris = new List<string>()
+            var secondariesConfig = new Dictionary<string, string>();
+
+#if DEBUG
+            secondariesConfig = new Dictionary<string, string>()
             {
-                "http://secondary1:80",
-                "http://secondary2:80",
+                { "http://localhost:5011", "Secondary1" },
+                { "http://localhost:5022", "Secondary2" },
             };
 
-            //List<string> uris = new List<string>()
-            //{
-            //    "http://localhost:5012",
-            //    "http://localhost:5022",
-            //};
-
+#else
+            secondariesConfig = new Dictionary<string, string>()
+            {
+                { "http://secondary1:80", "Secondary1" },
+                { "http://secondary2:80", "Secondary2" },
+            };
+#endif
             var taskList = new List<Task>();
-            foreach (var secondaryUri in uris)
+            foreach (var secondaryConfig in secondariesConfig)
             {
-                taskList.Add(Client.PostAsJsonAsync($"{secondaryUri}/log", message));
+                taskList.Add(Task.Run(async () =>
+                {
+                    try
+                    {
+                        var result = await Client.PostAsJsonAsync($"{secondaryConfig.Key}/log", message);
+                        if (result.IsSuccessStatusCode)
+                        {
+                            _logger.LogInformation($"Received OK from {secondaryConfig.Value}");
+                        }
+                        else
+                        {
+                            _logger.LogError($"Response failed: {result.ReasonPhrase}");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError($"Error occurred while sending request {e.Message}");
+                    }
+
+                }));
             }
-            try
-            {
-                await Task.WhenAll(taskList);
-            }
-            catch(Exception e)
-            {
-                _logger.LogError($"Error occurred while sending request {e.Message}");
-            }
+            await Task.WhenAll(taskList);
         }
     }
 }
