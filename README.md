@@ -1,7 +1,6 @@
 # Overview
 
-This is a program which emulates in-memory replicated log. 
-.NET Core 3.1, Docker
+This is a program which emulates fault-tolerant in-memory distirbuted log. The messages replicated in parallel
 
 # Running the App
 
@@ -25,3 +24,6 @@ This is a program which emulates in-memory replicated log.
     POST localhost:8080/log 
     {"Message": "Test"}
 ```
+# Technologies
+
+.NET Core 3.1, Docker
