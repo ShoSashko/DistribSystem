@@ -5,5 +5,8 @@
     <AssemblyName>Secondary1a</AssemblyName>
   </PropertyGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.20" />
+	</ItemGroup>
 
 </Project>

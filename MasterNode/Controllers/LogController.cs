@@ -2,7 +2,10 @@
 using MasterNode.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MasterNode.Controllers
@@ -11,7 +14,7 @@ namespace MasterNode.Controllers
     [Route("[controller]")]
     public class LogController : ControllerBase
     {
-        private static readonly List<string> LogList = new List<string>();
+        private static readonly ConcurrentDictionary<int, string> LogDict = new ConcurrentDictionary<int, string>();
         private readonly LogService _logService;
         public LogController(LogService logService)
         {
@@ -21,18 +24,28 @@ namespace MasterNode.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok(await Task.FromResult(LogList));
+            return Ok(await Task.FromResult(LogDict));
         }
 
         [HttpPost]
         public async Task<IActionResult> Append(LogDto dto)
         {
             var message = $"Added log {DateTime.Now} with message: {dto.Message}";
+
+            if (LogDict.TryAdd(LogDict.Count + 1, message))
+            {
+                Console.WriteLine($"Thread={Thread.CurrentThread.ManagedThreadId}, added {message}.");
+            }
+            else
+            {
+                Console.WriteLine($"Thread={Thread.CurrentThread.ManagedThreadId}, could not add {message}. It's already added.");
+            }
             var logDto = new LogDto
             {
+                Id = LogDict.Count,
                 Message = message
             };
-            LogList.Add(message);
+
             await _logService.AppendMessage(logDto);
             return Ok();
         }

@@ -2,7 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Secondary1.Dto;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,19 +15,26 @@ namespace Secondary1.Controllers
     [Route("[controller]")]
     public class LogController : ControllerBase
     {
-        private static readonly List<string> LogList = new List<string>();
+        private static readonly ConcurrentDictionary<int, string> LogDict = new ConcurrentDictionary<int, string>();
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok(await Task.FromResult(LogList));
+            return Ok(await Task.FromResult(LogDict));
         }
 
         [HttpPost]
         public async Task<IActionResult> Append([FromBody]LogDto dto)
         {
-            Thread.Sleep(5000);
-            LogList.Add(dto.Message);
+            Thread.Sleep(3000);
+            if (LogDict.TryAdd(dto.Id, dto.Message))
+            {
+                Console.WriteLine($"Thread={Thread.CurrentThread.ManagedThreadId}, added {dto.Message}.");
+            }
+            else
+            {
+                Console.WriteLine($"Thread={Thread.CurrentThread.ManagedThreadId}, could not add {dto.Message}. It's already added.");
+            }
             
             return Ok();
         }
