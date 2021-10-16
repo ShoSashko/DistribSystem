@@ -1,7 +1,7 @@
 # Overview
 
-This is a program which emulates fault-tolerant in-memory distirbuted log. The messages replicated in parallel
-To introduce delay Secondary2 - delays response for 3 second.
+This is a program which emulates fault-tolerant in-memory distirbuted log. The messages replicated in parallel (To introduce delay Secondary2 - delays response for 3 seconds)
+
 
 # Running the App
 
