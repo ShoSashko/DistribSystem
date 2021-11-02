@@ -5,7 +5,9 @@ To introduce eventual consistency Secondary1 delays request for 10 seconds. Seco
 
 # Branches
 iteration1 represents 1 iteration of replicated logs
+
 iteration2 represents 2 iteration with write concern and semi-synchronicity 
+
 master - maintains latest iteration (currently 2). 
 
 
