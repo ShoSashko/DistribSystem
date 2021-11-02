@@ -4,9 +4,9 @@ This is a program which emulates fault-tolerant in-memory distirbuted log. The m
 To introduce eventual consistency Secondary1 delays request for 10 seconds. Secondary2 delays request for 20 seconds.
 
 # Branches
-iteration1 represents 1 iteration of replicated logs
+iteration1
 
-iteration2 represents 2 iteration with write concern and semi-synchronicity 
+iteration2 (with write concern and semi-synchronicity)
 
 master - maintains latest iteration (currently 2). 
 
