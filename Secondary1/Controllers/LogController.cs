@@ -26,8 +26,8 @@ namespace Secondary1.Controllers
         [HttpPost]
         public async Task<IActionResult> Append([FromBody]LogDto dto)
         {
-            Thread.Sleep(3000);
-            if (LogDict.TryAdd(dto.Id, dto.Message))
+            Thread.Sleep(10000);
+            if (LogDict.TryAdd(dto.Id, dto.Message + $". Receive at: {DateTime.Now}"))
             {
                 Console.WriteLine($"Thread={Thread.CurrentThread.ManagedThreadId}, added {dto.Message}.");
             }

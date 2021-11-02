@@ -30,6 +30,24 @@ namespace MasterNode.Controllers
         [HttpPost]
         public async Task<IActionResult> Append(LogDto dto)
         {
+            var secondariesConfig = new Dictionary<string, (string, bool)>();
+
+#if DEBUG
+            secondariesConfig = new Dictionary<string, (string, bool)>()
+            {
+                { "http://localhost:5011", ("Secondary1", false) },
+                { "http://localhost:5022", ("Secondary2", false) },
+            };
+
+#else
+            secondariesConfig = new Dictionary<string, (string, bool)>()
+            {
+                { "http://secondary1:80", ("Secondary1", false) },
+                { "http://secondary2:80", ("Secondary2", false) },
+            };
+#endif
+
+
             var message = $"Added log {DateTime.Now} with message: {dto.Message}";
 
             if (LogDict.TryAdd(LogDict.Count + 1, message))
@@ -46,7 +64,9 @@ namespace MasterNode.Controllers
                 Message = message
             };
 
-            await _logService.AppendMessage(logDto);
+            await _logService.AppendMessageToNodeAsync(logDto, secondariesConfig, dto.W);
+            _logService.AppendMessageIfNotYetAppended(logDto, secondariesConfig);
+
             return Ok();
         }
     }

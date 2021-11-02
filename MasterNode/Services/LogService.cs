@@ -37,6 +37,7 @@ namespace MasterNode.Services
                 { "http://secondary2:80", "Secondary2" },
             };
 #endif
+
             var taskList = new List<Task>();
             foreach (var secondaryConfig in secondariesConfig)
             {
@@ -60,6 +61,76 @@ namespace MasterNode.Services
                     }
 
                 }));
+            }
+            await Task.WhenAll(taskList);
+        }
+
+        public async Task AppendMessageIfNotYetAppended(LogDto message, Dictionary<string, (string NodeName, bool IsExecuted)> secondariesConfig)
+        {
+            var taskList = new List<Task>();
+            foreach (var secondaryConfig in secondariesConfig)
+            {
+                if (!secondaryConfig.Value.IsExecuted)
+                {
+                    taskList.Add(Task.Run(async () =>
+                    {
+                        try
+                        {
+                            var result = await Client.PostAsJsonAsync($"{secondaryConfig.Key}/log", message);
+                            if (result.IsSuccessStatusCode)
+                            {
+                                secondariesConfig[secondaryConfig.Key] = (secondaryConfig.Value.NodeName, true);
+                                _logger.LogInformation($"Received OK from {secondaryConfig.Value.NodeName}");
+                            }
+                            else
+                            {
+                                _logger.LogError($"Response failed: {result.ReasonPhrase}");
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogError($"Error occurred while sending request {e.Message}");
+                        }
+
+                    }));
+                }
+            }
+            await Task.WhenAll(taskList);
+        }
+
+        public async Task AppendMessageToNodeAsync(LogDto message, Dictionary<string, (string NodeName, bool IsExecuted)> secondariesConfig, int w)
+        {
+            var taskList = new List<Task>();
+            foreach (var secondaryConfig in secondariesConfig)
+            {
+                if (w <= 1)
+                    break;
+
+                if (!secondaryConfig.Value.IsExecuted)
+                {
+                    taskList.Add(Task.Run(async () =>
+                    {
+                        try
+                        {
+                            var result = await Client.PostAsJsonAsync($"{secondaryConfig.Key}/log", message);
+                            if (result.IsSuccessStatusCode)
+                            {
+                                secondariesConfig[secondaryConfig.Key] = (secondaryConfig.Value.NodeName, true);
+                                _logger.LogInformation($"Received OK from {secondaryConfig.Value.NodeName}");
+                            }
+                            else
+                            {
+                                _logger.LogError($"Response failed: {result.ReasonPhrase}");
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogError($"Error occurred while sending request {e.Message}");
+                        }
+
+                    }));
+                    w--;
+                }
             }
             await Task.WhenAll(taskList);
         }
