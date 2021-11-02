@@ -1,6 +1,12 @@
 # Overview
 
-This is a program which emulates fault-tolerant in-memory distirbuted log. The messages replicated in parallel (To introduce delay Secondary2 - delays response for 3 seconds)
+This is a program which emulates fault-tolerant in-memory distirbuted log. The messages replicated in parallel.
+To introduce eventual consistency Secondary1 delays request for 10 seconds. Secondary2 delays request for 20 seconds.
+
+# Branches
+iteration1 represents 1 iteration of replicated logs
+iteration2 represents 2 iteration with write concern and semi-synchronicity 
+master - maintains latest iteration (currently 2). 
 
 
 # Running the App
@@ -16,7 +22,7 @@ This is a program which emulates fault-tolerant in-memory distirbuted log. The m
 ```bash
     # post a message (master only)
     POST localhost:9091/log 
-    {"Message": "Test"}
+    {"Message": "Test", "W": 1}
 
     # get logs from master
     GET localhost:9091/log
