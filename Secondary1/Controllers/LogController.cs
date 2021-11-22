@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Secondary1.Dto;
+using Secondary1.Repositories;
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -12,7 +13,6 @@ namespace Secondary1.Controllers
     [Route("[controller]")]
     public class LogController : ControllerBase
     {
-        private static readonly ConcurrentDictionary<int, string> LogDict = new ConcurrentDictionary<int, string>();
         public IConfiguration Configuration { get; private set; }
         public LogController(IConfiguration configuration)
         {
@@ -22,14 +22,14 @@ namespace Secondary1.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok(await Task.FromResult(LogDict));
+            return Ok(await Task.FromResult(LogRepository.Context));
         }
 
         [HttpPost]
         public async Task<IActionResult> Append([FromBody]LogDto dto)
         {
             await Task.Delay((int)Configuration.GetValue(typeof(int), "Delay"));
-            if (LogDict.TryAdd(dto.Id, dto.Message + $". Receive at: {DateTime.Now}"))
+            if (LogRepository.Context.TryAdd(dto.Id, dto.Message + $". Receive at: {DateTime.Now}"))
             {
                 Console.WriteLine($"Thread={Thread.CurrentThread.ManagedThreadId}, added {dto.Message}.");
             }
