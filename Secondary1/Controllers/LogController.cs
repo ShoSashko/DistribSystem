@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using Secondary1.Dto;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,6 +13,11 @@ namespace Secondary1.Controllers
     public class LogController : ControllerBase
     {
         private static readonly ConcurrentDictionary<int, string> LogDict = new ConcurrentDictionary<int, string>();
+        public IConfiguration Configuration { get; private set; }
+        public LogController(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
 
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -26,7 +28,7 @@ namespace Secondary1.Controllers
         [HttpPost]
         public async Task<IActionResult> Append([FromBody]LogDto dto)
         {
-            Thread.Sleep(10000);
+            await Task.Delay((int)Configuration.GetValue(typeof(int), "Delay"));
             if (LogDict.TryAdd(dto.Id, dto.Message + $". Receive at: {DateTime.Now}"))
             {
                 Console.WriteLine($"Thread={Thread.CurrentThread.ManagedThreadId}, added {dto.Message}.");

@@ -1,6 +1,8 @@
 ﻿using MasterNode.Dto;
+using MasterNode.Repositories;
 using MasterNode.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -14,9 +16,9 @@ namespace MasterNode.Controllers
     [Route("[controller]")]
     public class LogController : ControllerBase
     {
-        private static readonly ConcurrentDictionary<int, string> LogDict = new ConcurrentDictionary<int, string>();
-        private readonly LogService _logService;
-        public LogController(LogService logService)
+        private readonly ReplicationService _logService;
+
+        public LogController(ReplicationService logService, IConfiguration configuration)
         {
             _logService = logService;
         }
@@ -24,14 +26,13 @@ namespace MasterNode.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok(await Task.FromResult(LogDict));
+            return Ok(await Task.FromResult(LogRepository.Context));
         }
 
         [HttpPost]
         public async Task<IActionResult> Append(LogDto dto)
         {
             var secondariesConfig = new Dictionary<string, (string, bool)>();
-
 #if DEBUG
             secondariesConfig = new Dictionary<string, (string, bool)>()
             {
@@ -50,7 +51,7 @@ namespace MasterNode.Controllers
 
             var message = $"Added log {DateTime.Now} with message: {dto.Message}";
 
-            if (LogDict.TryAdd(LogDict.Count + 1, message))
+            if (LogRepository.Context.TryAdd(LogRepository.Context.Count + 1, message))
             {
                 Console.WriteLine($"Thread={Thread.CurrentThread.ManagedThreadId}, added {message}.");
             }
@@ -60,12 +61,11 @@ namespace MasterNode.Controllers
             }
             var logDto = new LogDto
             {
-                Id = LogDict.Count,
+                Id = LogRepository.Context.Count,
                 Message = message
             };
 
-            await _logService.AppendMessageToNodeAsync(logDto, secondariesConfig, dto.W);
-            _logService.AppendMessageIfNotYetAppended(logDto, secondariesConfig);
+            await _logService.AppendMessageIfNotYetAppended(logDto, secondariesConfig, dto.W); 
 
             return Ok();
         }
