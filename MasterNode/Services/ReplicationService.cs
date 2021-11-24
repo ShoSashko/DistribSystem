@@ -61,11 +61,13 @@ namespace MasterNode.Services
             }
 
             var allTask = Task.WhenAll(taskList);
-            while (countDownEvent.CurrentCount > 0)
-            {
-                countDownEvent.WaitHandle.WaitOne();
-                _logger.LogInformation("Waited for one");
-            }
+            //while (!countDownEvent.IsSet)
+            //{
+            //    countDownEvent.WaitHandle.WaitOne();
+            //    _logger.LogInformation("Waited for one");
+            //}
+
+            countDownEvent.Wait();
             //ALSO working example:
             //while (!allTask.IsCompleted)
             //{
