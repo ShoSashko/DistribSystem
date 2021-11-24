@@ -13,12 +13,12 @@ services:
         ports:
             - "9092:80"
         environment:
-          - DELAY=1000
+          - DELAY=10000
     secondary2:
         build: 
             context: .
             dockerfile: Secondary1/Dockerfile
         environment:
-          - DELAY=5000
+          - DELAY=20000
         ports:
             - "9093:80"

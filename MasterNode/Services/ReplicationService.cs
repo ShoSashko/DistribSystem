@@ -63,8 +63,8 @@ namespace MasterNode.Services
             var allTask = Task.WhenAll(taskList);
             while (countDownEvent.CurrentCount > 0)
             {
-                await Task.Delay(500);
-                _logger.LogInformation("Delayed 0.5 seconds");
+                countDownEvent.WaitHandle.WaitOne();
+                _logger.LogInformation("Waited for one");
             }
             //ALSO working example:
             //while (!allTask.IsCompleted)
