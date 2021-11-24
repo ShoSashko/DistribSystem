@@ -36,8 +36,7 @@ namespace MasterNode.Controllers
 #if DEBUG
             secondariesConfig = new Dictionary<string, (string, bool)>()
             {
-                { "http://localhost:5011", ("Secondary1", false) },
-                { "http://localhost:5022", ("Secondary2", false) },
+                { "http://localhost:5011", ("Secondary1", false) }
             };
 
 #else
