@@ -60,24 +60,11 @@ namespace MasterNode.Services
                         }
                         catch (TaskCanceledException e)
                         {
-                            if (e.CancellationToken.IsCancellationRequested)
-                            {
-                                _logger.LogError("Cancellation requested");
-                                break;
-                            }
                             currentRetry++;
                             _logger.LogCritical($"Error occurred while sending request d with message {e.Message}.\n" +
                                 $" Service Name {secondaryConfig.Value.NodeName}.\n" +
                                 $" Retry Count: {currentRetry}" +
-                                $" Timeout Delay: {Math.Pow(2, currentRetry * 1000)}");
-                        }
-                        catch (WebException e)
-                        {
-                            currentRetry++;
-                            _logger.LogError($"Error occurred while sending request with f message {e.Message}.\n" +
-                                $" Service Name {secondaryConfig.Value.NodeName}.\n" +
-                                $" Retry Count: {currentRetry}" +
-                                $" Timeout Delay: {Math.Pow(2, currentRetry * 1000)}");
+                                $" Timeout Delay: {(int)Math.Pow(currentRetry, 2)}");
                         }
                         catch (Exception e)
                         {
@@ -85,13 +72,10 @@ namespace MasterNode.Services
                             _logger.LogError($"Error occurred while sending request with message {e.Message}.\n" +
                                 $" Service Name {secondaryConfig.Value.NodeName}.\n" +
                                 $" Retry Count: {currentRetry}" +
-                                $" Timeout Delay: {Math.Pow(2, currentRetry * 1000)}");
+                                $" Timeout Delay: {(int)Math.Pow(currentRetry, 2)}");
                         }
-                        //2^1 = 2
-                        //2^2 = 4
-                        //2^3 = 8
-                        _logger.LogError($"Delay: {Math.Pow(2, currentRetry * 1000)}");
-                        await Task.Delay(currentRetry * 1000);
+                        _logger.LogError($"Delay: {(int)Math.Pow(currentRetry, 2)}");
+                        await Task.Delay((int)Math.Pow(currentRetry, 2) * 1000);
                     }
                 }));
             }
