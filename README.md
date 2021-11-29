@@ -1,12 +1,7 @@
 # Overview
 
 This is a program which emulates fault-tolerant in-memory distirbuted log. The messages replicated in parallel.
-To introduce eventual consistency Secondary1 delays request for 10 seconds. Secondary2 delays request for 20 seconds.
 
-# Branches
-iteration1
-
-iteration2 (with write concern and semi-synchronicity)
 
 master - maintains latest iteration (currently 3). 
 
