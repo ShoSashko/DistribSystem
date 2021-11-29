@@ -8,7 +8,7 @@ iteration1
 
 iteration2 (with write concern and semi-synchronicity)
 
-master - maintains latest iteration (currently 2). 
+master - maintains latest iteration (currently 3). 
 
 
 # Running the App
