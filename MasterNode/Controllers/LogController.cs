@@ -64,7 +64,7 @@ namespace MasterNode.Controllers
                 Message = message
             };
 
-            await _logService.AppendMessageIfNotYetAppended(logDto, secondariesConfig, dto.W); 
+            _logService.AppendMessageIfNotYetAppended(logDto, secondariesConfig, dto.W); 
 
             return Ok();
         }
